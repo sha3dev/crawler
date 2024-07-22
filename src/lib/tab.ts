@@ -4,6 +4,8 @@
 
 import Logger from "@sha3/logger";
 import * as puppeteer from "puppeteer";
+import { JSDOM } from "jsdom";
+import * as sharp from "sharp";
 
 /**
  * imports: internals
@@ -31,6 +33,8 @@ export type TabOptions = {
 export type TabViewport = { width: number; height: number };
 
 export type FunctionToExec = (window: Window) => any;
+
+export type GetImageOptions = { trim?: boolean; background?: string };
 
 /**
  * export
@@ -103,9 +107,55 @@ export default class Tab {
     return result;
   }
 
+  public async evaluate(code: string) {
+    this.logger.debug(`evalueting JS code`);
+    const { page } = this.options;
+    const result = await page.evaluate(code);
+    return result;
+  }
+
   public async addStyle(style: string) {
     const { page } = this.options;
     this.logger.debug(`adding style`);
     await page.addStyleTag({ content: style });
+  }
+
+  public async setViewport(viewport: TabViewport) {
+    this.logger.debug(`setting viewport: ${JSON.stringify(viewport)}`);
+    const { page } = this.options;
+    await page.setViewport(viewport);
+  }
+
+  public async querySelectorAll<T>(selector: string) {
+    this.logger.debug(`queryng elements: ${selector}`);
+    const { page } = this.options;
+    const elems = await page.$$(selector);
+    return elems as T[];
+  }
+
+  public async getImage(selector: string, options: GetImageOptions) {
+    const { page } = this.options;
+    const { trim, background } = options;
+    const elems = await page.$$(selector);
+    const imageElem = elems[0];
+    if (imageElem) {
+      const imageBuffer = await imageElem.screenshot({ omitBackground: true });
+      let sharpInstance = sharp(imageBuffer);
+      if (trim) {
+        sharpInstance = sharpInstance.trim();
+      }
+      if (background) {
+        sharpInstance = sharpInstance.flatten({ background });
+      }
+      const buffer = await sharpInstance.toBuffer();
+      return buffer;
+    }
+  }
+
+  public async toDOM() {
+    this.logger.debug(`obtaining DOM from HTML`);
+    const html = await this.html();
+    const { document } = new JSDOM(html).window;
+    return document;
   }
 }

@@ -134,19 +134,20 @@ export default class Tab {
     return elems as puppeteer.ElementHandle<T>[];
   }
 
-  public async getImage(selector: string, options: GetImageOptions) {
+  public async getImage(selector: string, options?: GetImageOptions) {
     const { page } = this.options;
-    const { trim, background } = options;
     const elems = await page.$$(selector);
     const imageElem = elems[0];
     if (imageElem) {
       const imageBuffer = await imageElem.screenshot({ omitBackground: true });
       let sharpInstance = sharp(imageBuffer);
-      if (trim) {
+      if (options?.trim) {
         sharpInstance = sharpInstance.trim();
       }
-      if (background) {
-        sharpInstance = sharpInstance.flatten({ background });
+      if (options?.background) {
+        sharpInstance = sharpInstance.flatten({
+          background: options.background,
+        });
       }
       const buffer = await sharpInstance.toBuffer();
       return buffer;

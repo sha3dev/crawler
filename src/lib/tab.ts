@@ -107,10 +107,10 @@ export default class Tab {
     return result;
   }
 
-  public async evaluate(code: Parameters<puppeteer.Page["evaluate"]>[0]) {
+  public async evaluate(...args: Parameters<puppeteer.Page["evaluate"]>) {
     this.logger.debug(`evalueting JS code`);
     const { page } = this.options;
-    const result = await page.evaluate(code);
+    const result = await page.evaluate(...args);
     return result;
   }
 

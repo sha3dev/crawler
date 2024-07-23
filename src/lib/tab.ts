@@ -107,7 +107,7 @@ export default class Tab {
     return result;
   }
 
-  public async evaluate(code: string) {
+  public async evaluate(code: Parameters<puppeteer.Page["evaluate"]>[0]) {
     this.logger.debug(`evalueting JS code`);
     const { page } = this.options;
     const result = await page.evaluate(code);

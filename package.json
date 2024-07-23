@@ -1,6 +1,6 @@
 {
   "name": "@sha3/crawler",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Puppeteer wrapper",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

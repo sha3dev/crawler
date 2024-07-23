@@ -126,11 +126,11 @@ export default class Tab {
     await page.setViewport(viewport);
   }
 
-  public async querySelectorAll<T>(selector: string) {
+  public async querySelectorAll<T extends HTMLElement>(selector: string) {
     this.logger.debug(`queryng elements: ${selector}`);
     const { page } = this.options;
     const elems = await page.$$(selector);
-    return elems as T[];
+    return elems as puppeteer.ElementHandle<T>[];
   }
 
   public async getImage(selector: string, options: GetImageOptions) {

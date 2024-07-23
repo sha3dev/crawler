@@ -117,7 +117,8 @@ export default class Tab {
   public async addStyle(style: string) {
     const { page } = this.options;
     this.logger.debug(`adding style`);
-    await page.addStyleTag({ content: style });
+    const result = await page.addStyleTag({ content: style });
+    return result;
   }
 
   public async setViewport(viewport: TabViewport) {

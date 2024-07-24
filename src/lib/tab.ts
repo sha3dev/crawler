@@ -5,7 +5,7 @@
 import Logger from "@sha3/logger";
 import * as puppeteer from "puppeteer";
 import { JSDOM } from "jsdom";
-import * as sharp from "sharp";
+import sharp from "sharp";
 
 /**
  * imports: internals

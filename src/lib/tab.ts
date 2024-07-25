@@ -121,10 +121,16 @@ export default class Tab {
     return result;
   }
 
-  public async setViewport(viewport: TabViewport) {
+  public async setViewport(
+    viewport: TabViewport,
+    options?: { waitInMs?: number }
+  ) {
     this.logger.debug(`setting viewport: ${JSON.stringify(viewport)}`);
     const { page } = this.options;
     await page.setViewport(viewport);
+    if (options?.waitInMs) {
+      await new Promise((resolve) => setTimeout(resolve, options?.waitInMs));
+    }
   }
 
   public async querySelectorAll<T extends HTMLElement>(selector: string) {

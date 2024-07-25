@@ -61,7 +61,7 @@ export default class Crawler {
    * private: methods
    */
 
-  private async getBrowserInstance() {
+  private async getBrowserInstance(headless?: boolean) {
     if (!this.browser) {
       logger.debug(`launching puppeteer instance`);
       this.browser = await puppeteer.launch({
@@ -93,13 +93,17 @@ export default class Crawler {
 
   public async open(
     url: string,
-    options: { style?: string; viewport?: puppeteer.Viewport } = {}
+    options: {
+      style?: string;
+      viewport?: puppeteer.Viewport;
+      headless?: boolean;
+    } = {}
   ) {
     logger.debug(`openning new page: ${url}`);
-    const { style } = options;
+    const { style, headless } = options;
     const { headers, navigatorProperties, waitUntil, timeout } = this.options;
     const viewport = options.viewport || this.options.viewport;
-    const browserInstance = await this.getBrowserInstance();
+    const browserInstance = await this.getBrowserInstance(headless);
     const page = await browserInstance.newPage();
     await page.setViewport(viewport);
     if (headers) {

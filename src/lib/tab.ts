@@ -34,7 +34,11 @@ export type TabViewport = { width: number; height: number };
 
 export type FunctionToExec = (window: Window) => any;
 
-export type GetImageOptions = { trim?: boolean; background?: string };
+export type GetImageOptions = {
+  trim?: boolean;
+  background?: string;
+  format?: "jpeg" | "png";
+};
 
 /**
  * export
@@ -155,6 +159,7 @@ export default class Tab {
           background: options.background,
         });
       }
+      sharpInstance.toFormat(options?.format || "png");
       const buffer = await sharpInstance.toBuffer();
       return buffer;
     }

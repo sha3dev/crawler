@@ -65,7 +65,7 @@ export default class Crawler {
     if (!this.browser) {
       logger.debug(`launching puppeteer instance`);
       this.browser = await puppeteer.launch({
-        headless: true,
+        headless: !!headless,
         args: DEFAULT_PUPPETEER_ARGS,
       });
     }

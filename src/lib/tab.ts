@@ -137,6 +137,14 @@ export default class Tab {
     }
   }
 
+  public async setPreferredColorScheme(mode: "dark" | "light") {
+    const { page } = this.options;
+    this.logger.debug(`setting preferred color scheme: ${mode}`);
+    await page.emulateMediaFeatures([
+      { name: "prefers-color-scheme", value: mode },
+    ]);
+  }
+
   public async querySelectorAll<T extends HTMLElement>(selector: string) {
     this.logger.debug(`queryng elements: ${selector}`);
     const { page } = this.options;

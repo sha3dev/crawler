@@ -32,6 +32,8 @@ export type TabOptions = {
 
 export type TabViewport = { width: number; height: number };
 
+export type ColorScheme = "dark" | "light";
+
 export type FunctionToExec = (window: Window) => any;
 
 export type GetImageOptions = {
@@ -50,6 +52,7 @@ export default class Tab {
    */
 
   private logger: Logger;
+  private currentPreferredColorScheme: ColorScheme | null = null;
 
   /**
    * private: methods
@@ -71,6 +74,10 @@ export default class Tab {
     const { page } = this.options;
     const viewport = page.viewport();
     return { width: viewport.width, height: viewport.height };
+  }
+
+  public get CurrentPreferredColorScheme() {
+    return this.currentPreferredColorScheme;
   }
 
   /**
@@ -137,12 +144,19 @@ export default class Tab {
     }
   }
 
-  public async setPreferredColorScheme(mode: "dark" | "light") {
+  public async setPreferredColorScheme(
+    colorScheme: ColorScheme,
+    options?: { waitInMs?: number }
+  ) {
     const { page } = this.options;
-    this.logger.debug(`setting preferred color scheme: ${mode}`);
+    this.logger.debug(`setting preferred color scheme: ${colorScheme}`);
     await page.emulateMediaFeatures([
-      { name: "prefers-color-scheme", value: mode },
+      { name: "prefers-color-scheme", value: colorScheme },
     ]);
+    if (options?.waitInMs) {
+      await new Promise((resolve) => setTimeout(resolve, options?.waitInMs));
+    }
+    this.currentPreferredColorScheme = colorScheme;
   }
 
   public async querySelectorAll<T extends HTMLElement>(selector: string) {

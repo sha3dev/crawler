@@ -97,14 +97,18 @@ export default class Crawler {
       style?: string;
       viewport?: puppeteer.Viewport;
       headless?: boolean;
+      mediaFeatures?: puppeteer.MediaFeature[];
     } = {}
   ) {
     logger.debug(`openning new page: ${url}`);
-    const { style, headless } = options;
+    const { style, headless, mediaFeatures } = options;
     const { headers, navigatorProperties, waitUntil, timeout } = this.options;
     const viewport = options.viewport || this.options.viewport;
     const browserInstance = await this.getBrowserInstance(headless);
     const page = await browserInstance.newPage();
+    if (mediaFeatures?.length) {
+      await page.emulateMediaFeatures(mediaFeatures);
+    }
     await page.setViewport(viewport);
     if (headers) {
       await page.setExtraHTTPHeaders(headers);

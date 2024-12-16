@@ -1,6 +1,6 @@
 {
   "name": "@sha3/crawler",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Puppeteer wrapper",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -17,7 +17,7 @@
     "dotenv": "^16.4.5",
     "jsdom": "^24.1.1",
     "puppeteer": "^22.13.1",
-    "sharp": "^0.33.5"
+    "sharp": "0.33.4"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",

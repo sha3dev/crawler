@@ -119,7 +119,7 @@ export default class Tab {
   }
 
   public async evaluate(...args: Parameters<puppeteer.Page["evaluate"]>) {
-    this.logger.debug(`evalueting JS code`);
+    this.logger.debug(`evaluating JS code`);
     const { page } = this.options;
     const result = await page.evaluate(...args);
     return result;
@@ -160,7 +160,7 @@ export default class Tab {
   }
 
   public async querySelectorAll<T extends HTMLElement>(selector: string) {
-    this.logger.debug(`queryng elements: ${selector}`);
+    this.logger.debug(`querying elements: ${selector}`);
     const { page } = this.options;
     const elems = await page.$$(selector);
     return elems as puppeteer.ElementHandle<T>[];

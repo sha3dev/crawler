@@ -20,11 +20,18 @@ export type TabOptions = {
   url: string;
   page: puppeteer.Page;
   gotoResponse: puppeteer.HTTPResponse;
+  colorScheme?: ColorScheme;
+  style?: string;
 };
 
 /**
  * consts
  */
+
+const DEFAULT_RELOAD_OPTIONS = {
+  timeout: 60000,
+  waitUntil: "networkidle0" as puppeteer.PuppeteerLifeCycleEvent,
+};
 
 /**
  * types
@@ -40,6 +47,11 @@ export type GetImageOptions = {
   trim?: boolean;
   background?: string;
   format?: "jpeg" | "png";
+};
+
+export type ReloadOptions = {
+  timeout?: number;
+  waitUntil?: puppeteer.PuppeteerLifeCycleEvent;
 };
 
 /**
@@ -64,6 +76,10 @@ export default class Tab {
 
   constructor(private options: TabOptions) {
     this.logger = options.logger;
+    const { colorScheme } = this.options;
+    if (colorScheme) {
+      this.currentPreferredColorScheme = colorScheme;
+    }
   }
 
   /**
@@ -87,6 +103,14 @@ export default class Tab {
   public async close() {
     const { page } = this.options;
     await page.close();
+  }
+
+  public async reload(options?: ReloadOptions) {
+    const { page, style } = this.options;
+    await page.reload({ ...DEFAULT_RELOAD_OPTIONS, ...options });
+    if (style) {
+      await page.addStyleTag({ content: style });
+    }
   }
 
   public async wait(options: {
@@ -171,7 +195,11 @@ export default class Tab {
     const elems = await page.$$(selector);
     const imageElem = elems[0];
     if (imageElem) {
-      const imageBuffer = await imageElem.screenshot({ omitBackground: true });
+      const imageBuffer = await imageElem.screenshot({
+        omitBackground: true,
+        optimizeForSpeed: true,
+        captureBeyondViewport: false,
+      });
       let sharpInstance = sharp(imageBuffer);
       if (options?.trim) {
         sharpInstance = sharpInstance.trim();

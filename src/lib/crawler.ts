@@ -9,7 +9,7 @@ import * as puppeteer from "puppeteer";
  * imports: internals
  */
 
-import Tab from "./tab";
+import Tab, { ColorScheme } from "./tab";
 
 /**
  * module: initializations
@@ -34,6 +34,7 @@ export type CrawlerOptions = {
  */
 
 const DEFAULT_PUPPETEER_ARGS = [
+  "--no-sandbox",
   "--disable-web-security",
   "--allow-running-insecure-content",
   "--lang=en-US,en",
@@ -97,18 +98,18 @@ export default class Crawler {
       style?: string;
       viewport?: puppeteer.Viewport;
       headless?: boolean;
-      preferredColorScheme?: "light" | "dark";
+      preferredColorScheme?: ColorScheme;
     } = {}
   ) {
     logger.debug(`openning new page: ${url}`);
-    const { style, headless, preferredColorScheme } = options;
+    const { style, headless, preferredColorScheme: colorScheme } = options;
     const { headers, navigatorProperties, waitUntil, timeout } = this.options;
     const viewport = options.viewport || this.options.viewport;
     const browserInstance = await this.getBrowserInstance(headless);
     const page = await browserInstance.newPage();
-    if (preferredColorScheme) {
+    if (colorScheme) {
       await page.emulateMediaFeatures([
-        { name: "prefers-color-scheme", value: preferredColorScheme },
+        { name: "prefers-color-scheme", value: colorScheme },
       ]);
     }
     await page.setViewport(viewport);
@@ -128,6 +129,6 @@ export default class Crawler {
     if (style) {
       await page.addStyleTag({ content: style });
     }
-    return new Tab({ url, page, gotoResponse, logger });
+    return new Tab({ url, page, gotoResponse, style, logger, colorScheme });
   }
 }

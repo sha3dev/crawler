@@ -25,6 +25,7 @@ export type CrawlerOptions = {
   viewport?: puppeteer.Viewport;
   headers?: Record<string, string>;
   waitUntil?: puppeteer.PuppeteerLifeCycleEvent;
+  userAgent?: string;
   navigatorProperties?: Record<string, any>;
   timeout?: number;
 };
@@ -38,6 +39,11 @@ const DEFAULT_PUPPETEER_ARGS = [
   "--disable-web-security",
   "--allow-running-insecure-content",
   "--lang=en-US,en",
+  "--disable-setuid-sandbox",
+  "--disable-dev-shm-usage",
+  "--disable-gpu",
+  "--no-zygote",
+  "--single-process"
 ];
 
 const DEFAULT_CRAWLER_OPTIONS: CrawlerOptions = {
@@ -103,7 +109,7 @@ export default class Crawler {
   ) {
     logger.debug(`openning new page: ${url}`);
     const { style, headless, preferredColorScheme: colorScheme } = options;
-    const { headers, navigatorProperties, waitUntil, timeout } = this.options;
+    const { headers, navigatorProperties, waitUntil, userAgent, timeout } = this.options;
     const viewport = options.viewport || this.options.viewport;
     const browserInstance = await this.getBrowserInstance(headless);
     const page = await browserInstance.newPage();
@@ -124,6 +130,9 @@ export default class Crawler {
           });
         });
       });
+    }
+    if (userAgent) {
+      await page.setUserAgent(userAgent);
     }
     const gotoResponse = await page.goto(url, { waitUntil, timeout });
     if (style) {

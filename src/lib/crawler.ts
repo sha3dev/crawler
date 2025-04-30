@@ -30,6 +30,13 @@ export type CrawlerOptions = {
   timeout?: number;
 };
 
+export type OpenOptions = {
+  style?: string;
+  viewport?: puppeteer.Viewport;
+  headless?: boolean;
+  preferredColorScheme?: ColorScheme;
+};
+
 /**
  * consts
  */
@@ -42,8 +49,8 @@ const DEFAULT_PUPPETEER_ARGS = [
   "--disable-setuid-sandbox",
   "--disable-dev-shm-usage",
   "--disable-gpu",
-  "--no-zygote",
-  "--single-process"
+  // "--no-zygote",
+  // "--single-process"
 ];
 
 const DEFAULT_CRAWLER_OPTIONS: CrawlerOptions = {
@@ -73,6 +80,7 @@ export default class Crawler {
       logger.debug(`launching puppeteer instance`);
       this.browser = await puppeteer.launch({
         headless: !!headless,
+        devtools: !headless,
         args: DEFAULT_PUPPETEER_ARGS,
       });
     }
@@ -98,15 +106,7 @@ export default class Crawler {
     }
   }
 
-  public async open(
-    url: string,
-    options: {
-      style?: string;
-      viewport?: puppeteer.Viewport;
-      headless?: boolean;
-      preferredColorScheme?: ColorScheme;
-    } = {}
-  ) {
+  public async open(url: string, options: OpenOptions = {}) {
     logger.debug(`openning new page: ${url}`);
     const { style, headless, preferredColorScheme: colorScheme } = options;
     const { headers, navigatorProperties, waitUntil, userAgent, timeout } = this.options;
@@ -117,6 +117,20 @@ export default class Crawler {
       await page.emulateMediaFeatures([
         { name: "prefers-color-scheme", value: colorScheme },
       ]);
+      await page.evaluateOnNewDocument((scheme) => {
+        Object.defineProperty(window, 'matchMedia', {
+          value: (query) => ({
+            matches: query === `(prefers-color-scheme: ${scheme})`,
+            media: query,
+            onchange: null,
+            addListener: () => {},
+            removeListener: () => {},
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            dispatchEvent: () => false,
+          }),
+        });
+      }, colorScheme);
     }
     await page.setViewport(viewport);
     if (headers) {

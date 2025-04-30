@@ -1,6 +1,6 @@
 {
   "name": "@sha3/crawler",
-  "version": "1.0.27",
+  "version": "1.0.30",
   "description": "Puppeteer wrapper",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -10,7 +10,7 @@
   "homepage": "https://github.com/sha3dev/crawler#readme",
   "scripts": {
     "test": "tsc --noEmit && node --loader tsx --test tests/*.test.ts",
-    "build": "tsup"
+    "build": "rm -rf dist && tsup"
   },
   "dependencies": {
     "@sha3/logger": "^1.0.1",
@@ -21,6 +21,15 @@
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
+    "@eslint/js": "^9.17.0",
+    "@types/color": "^3.0.6",
+    "@types/ejs": "^3.1.5",
+    "@types/html-minifier": "^4.0.5",
+    "@types/node": "^20.17.10",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "prettier": "^3.4.2",
+    "prettier-eslint": "^16.3.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.1.0",
     "tsx": "^4.16.2",
@@ -48,3 +57,5 @@
     "access": "public"
   }
 }
+
+

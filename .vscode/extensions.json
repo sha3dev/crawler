@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "tobermory.es6-string-html",
+    "jtladeiras.vscode-inline-sql",
+    "irongeek.vscode-env",
+    "github.github-vscode-theme",
+    "rvest.vs-code-prettier-eslint",
+    "dbaeumer.vscode-eslint",
+    "gruntfuggly.todo-tree",
+    "mhutchie.git-graph",
+    "yoavbls.pretty-ts-errors",
+    "floone.varnish-vcl",
+    "toanbui.combine-code-in-folder",
+    "connor4312.nodejs-testing",
+    "christian-kohler.npm-intellisense"
+  ]
+}

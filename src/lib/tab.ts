@@ -97,6 +97,35 @@ export default class Tab {
   }
 
   /**
+   * public static: methods
+   */
+
+  public static async setPreferredColorScheme(page:puppeteer.Page,colorScheme:ColorScheme, options?: { waitInMs?: number }){
+    await Promise.all([
+      page.emulateMediaFeatures([
+        { name: "prefers-color-scheme", value: colorScheme },
+      ]),
+      page.evaluateOnNewDocument((scheme:ColorScheme) => {
+          Object.defineProperty(window, 'matchMedia', {
+          value: (query:string) => ({
+            matches: query === `(prefers-color-scheme: ${scheme})`,
+            media: query,
+            onchange: null,
+            addListener: () => {},
+            removeListener: () => {},
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            dispatchEvent: () => false,
+          }),
+        });
+      }, colorScheme)
+    ]);
+    if (options?.waitInMs) {
+      await new Promise((resolve) => setTimeout(resolve, options?.waitInMs));
+    }
+  }
+
+  /**
    * public : methods
    */
 
@@ -173,17 +202,8 @@ export default class Tab {
     options?: { waitInMs?: number }
   ) {
     const { page } = this.options;
-    const checkMatchMedia = '(prefers-color-scheme: dark)';
-    const currentColorScheme = await page.evaluate(() => window.matchMedia(checkMatchMedia).matches ? 'dark' : 'light');
-    if(currentColorScheme !== colorScheme) {
-      this.logger.debug(`setting preferred color scheme: ${colorScheme}`);
-      await page.emulateMediaFeatures([
-        { name: "prefers-color-scheme", value: colorScheme },
-      ]);
-      if (options?.waitInMs) {
-        await new Promise((resolve) => setTimeout(resolve, options?.waitInMs));
-      }
-    }
+    await Tab.setPreferredColorScheme(page,colorScheme, options);
+    this.logger.debug(`setting preferred color scheme: ${colorScheme}`);
     this.currentPreferredColorScheme = colorScheme;
   }
 

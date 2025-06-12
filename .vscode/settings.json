@@ -1,12 +1,25 @@
 {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "prettier.requireConfig": false,
-    "nodejs-testing.nodejsPath": "/Users/jc/.nvm/versions/node/v22.4.1/bin/node",
-    "nodejs-testing.extensions": [
-        {
-          "extensions": ["mts", "cts", "ts"],
-          "parameters": ["--import", "tsx"],
-        }
-    ]
+  "eslint.enable": true,
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "files.autoSave": "off",
+  "typescript.updateImportsOnFileMove.enabled": "prompt",
+  "vs-code-prettier-eslint.prettierLast": false,
+  "git.repositoryScanMaxDepth": 2,
+  "search.exclude": {
+    ".vs/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true
+  },
+  "nodejs-testing.nodejsPath": "/Users/jc/.nvm/versions/node/v22.4.1/bin/node",
+  "nodejs-testing.extensions": [
+    {
+      "extensions": ["mts", "cts", "ts"],
+      "parameters": ["--import", "tsx"]
+    }
+  ]
 }

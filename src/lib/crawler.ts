@@ -35,6 +35,7 @@ export type OpenOptions = {
   viewport?: puppeteer.Viewport;
   headless?: boolean;
   preferredColorScheme?: ColorScheme;
+  blockNotHeadlessContent?: boolean;
 };
 
 /**
@@ -109,28 +110,13 @@ export default class Crawler {
   public async open(url: string, options: OpenOptions = {}) {
     logger.debug(`openning new page: ${url}`);
     const { style, headless, preferredColorScheme: colorScheme } = options;
-    const { headers, navigatorProperties, waitUntil, userAgent, timeout } = this.options;
+    const { headers, navigatorProperties, waitUntil, userAgent, timeout } =
+      this.options;
     const viewport = options.viewport || this.options.viewport;
     const browserInstance = await this.getBrowserInstance(headless);
     const page = await browserInstance.newPage();
     if (colorScheme) {
-      await page.emulateMediaFeatures([
-        { name: "prefers-color-scheme", value: colorScheme },
-      ]);
-      await page.evaluateOnNewDocument((scheme) => {
-        Object.defineProperty(window, 'matchMedia', {
-          value: (query) => ({
-            matches: query === `(prefers-color-scheme: ${scheme})`,
-            media: query,
-            onchange: null,
-            addListener: () => {},
-            removeListener: () => {},
-            addEventListener: () => {},
-            removeEventListener: () => {},
-            dispatchEvent: () => false,
-          }),
-        });
-      }, colorScheme);
+      await Tab.setPreferredColorScheme(page, colorScheme);
     }
     await page.setViewport(viewport);
     if (headers) {
@@ -147,6 +133,20 @@ export default class Crawler {
     }
     if (userAgent) {
       await page.setUserAgent(userAgent);
+    }
+    if (options.blockNotHeadlessContent) {
+      await page.setRequestInterception(true);
+      page.on("request", (req) => {
+        if (
+          req.resourceType() == "stylesheet" ||
+          req.resourceType() == "font" ||
+          req.resourceType() == "image"
+        ) {
+          req.abort();
+        } else {
+          req.continue();
+        }
+      });
     }
     const gotoResponse = await page.goto(url, { waitUntil, timeout });
     if (style) {
